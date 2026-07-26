@@ -60,7 +60,7 @@ Licensed under Apache 2.0.
 
 The Docker demo shows the central idea in two workflows:
 
-1. Code collects a complete, bounded set of Reddit finance posts.
+1. Code collects a complete, bounded set of live Hacker News finance discussions.
 2. A typed agent turns each unstructured post into a new sentiment/topic row.
 3. Code upserts those rows into a local SQLite dataset.
 4. A second workflow retrieves matching rows deterministically.
@@ -71,10 +71,10 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Open `http://localhost:8000`, run `reddit-finance-etl`, then run
+Open `http://localhost:8000`, run `social-finance-etl`, then run
 `grounded-finance-brief`. The default uses realistic seed posts and a visible
 deterministic agent fallback, so it works without credentials. Add
-`OPENAI_API_KEY` to use the configured Pydantic AI model. Add Reddit OAuth
-client credentials to collect live subreddit posts.
+`OPENAI_API_KEY` to use the configured Pydantic AI model. Hacker News collection
+uses the public Algolia search API and does not require an account or OAuth.
 
 All generated data remains in the local `flow-data` Docker volume.

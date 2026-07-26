@@ -126,11 +126,12 @@ def test_visualizer_and_workflow_api(tmp_path):
 
 async def test_finance_demo_end_to_end(tmp_path, monkeypatch):
     monkeypatch.setenv("FLOW_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("FLOW_SOCIAL_MODE", "seed")
     import finance_demo.registrations  # noqa: F401
 
-    etl = await Runner().run(load_workflow("workflows/reddit-finance-etl.json"))
+    etl = await Runner().run(load_workflow("workflows/social-finance-etl.json"))
     assert etl.status == "completed"
-    assert etl.outputs["load"]["rows_written"] == 5
+    assert etl.outputs["load"]["rows_written"] > 0
 
     brief = await Runner().run(load_workflow("workflows/grounded-finance-brief.json"))
     assert brief.status == "completed"

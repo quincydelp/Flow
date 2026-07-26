@@ -1,6 +1,6 @@
 {
-  "name": "reddit-finance-etl",
-  "description": "Deterministically collect finance posts, fan out structured agent extraction, and materialize a queryable dataset.",
+  "name": "social-finance-etl",
+  "description": "Search live Hacker News finance discussions without credentials, fan out typed agent extraction, and materialize a queryable dataset.",
   "version": "1",
   "inputs": {
     "limit": 20
@@ -9,11 +9,11 @@
     {
       "id": "collect-posts",
       "type": "source",
-      "uses": "reddit.finance",
+      "uses": "hackernews.finance",
       "action": "search",
       "with": {
         "query": {
-          "subreddits": ["stocks", "investing", "SecurityAnalysis"],
+          "text": "markets finance stocks earnings",
           "limit": "${inputs.limit}"
         }
       }
