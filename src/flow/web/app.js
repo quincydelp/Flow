@@ -92,7 +92,6 @@ function selectStep(step) {
   state.selectedStep = step.id;
   renderGraph();
   renderInspector(step);
-  document.querySelector('[data-tab="inspector"]').click();
 }
 
 function addInspectorRow(container, label, value) {
@@ -209,7 +208,6 @@ $("#new").onclick = () => {
 document.querySelectorAll(".tab").forEach((button) => {
   button.onclick = () => {
     document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab === button));
-    $("#inspector").hidden = button.dataset.tab !== "inspector";
     $("#definition").hidden = button.dataset.tab !== "source";
     $("#result").hidden = button.dataset.tab !== "result";
   };

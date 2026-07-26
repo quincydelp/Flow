@@ -29,17 +29,16 @@
           <div id="status" class="status">Ready</div>
         </div>
         <div id="graph" class="graph empty">No workflow selected</div>
-      </section>
-      <section class="detail-panel">
-        <div class="tabs">
-          <button class="tab active" data-tab="inspector">Node</button>
-          <button class="tab" data-tab="source">Source</button>
-          <button class="tab" data-tab="result">Last run</button>
-        </div>
         <div id="inspector" class="inspector">
           <div class="inspector-empty">Select a node in the DAG to inspect its definition.</div>
         </div>
-        <textarea id="definition" spellcheck="false" hidden></textarea>
+      </section>
+      <section class="detail-panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="source">Source</button>
+          <button class="tab" data-tab="result">Last run</button>
+        </div>
+        <textarea id="definition" spellcheck="false"></textarea>
         <pre id="result" hidden>No run yet.</pre>
       </section>
     </main>

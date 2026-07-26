@@ -210,7 +210,8 @@ p {
 }
 
 .graph {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -387,16 +388,18 @@ pre {
 textarea:focus { box-shadow: inset 3px 0 0 var(--white); }
 
 .inspector {
-  flex: 1;
+  flex: 0 0 auto;
+  max-height: 250px;
   overflow: auto;
-  padding: 18px 16px;
-  color: var(--white);
-  background: var(--black);
+  padding: 14px 18px 16px;
+  color: var(--black);
+  background: var(--white);
+  border-top: 1px solid var(--black);
 }
 
 .inspector-eyebrow {
-  margin-bottom: 9px;
-  color: var(--gray-300);
+  margin-bottom: 7px;
+  color: var(--gray-600);
   font: 700 8px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -410,34 +413,38 @@ textarea:focus { box-shadow: inset 3px 0 0 var(--white); }
 }
 
 .inspector p {
-  margin-top: 7px;
-  color: var(--gray-300);
+  margin-top: 5px;
+  color: var(--gray-600);
   font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .inspector-empty {
-  margin-top: 22px;
-  padding: 12px;
-  border: 1px dashed #555;
-  color: var(--gray-300);
+  margin-top: 12px;
+  padding: 9px 10px;
+  border: 1px dashed var(--gray-300);
+  color: var(--gray-600);
   font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .inspector-definition {
-  margin: 18px 0 0;
-  border-top: 1px solid #3d3d3d;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin: 12px 0 0;
+  border-top: 1px solid var(--black);
+  border-left: 1px solid var(--black);
 }
 
 .inspector-row {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #2d2d2d;
+  display: block;
+  min-width: 0;
+  padding: 9px 10px 10px;
+  border-right: 1px solid var(--black);
+  border-bottom: 1px solid var(--black);
 }
 
 .inspector-row dt {
-  color: var(--gray-300);
+  margin-bottom: 5px;
+  color: var(--gray-600);
   font: 700 8px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -447,7 +454,7 @@ textarea:focus { box-shadow: inset 3px 0 0 var(--white); }
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
-  color: var(--white);
+  color: var(--black);
   font: 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
   white-space: pre-wrap;
 }

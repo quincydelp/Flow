@@ -112,7 +112,8 @@ def test_visualizer_and_workflow_api(tmp_path):
     client = TestClient(create_app(tmp_path))
     assert client.get("/").status_code == 200
     assert "Flow Studio" in client.get("/").text
-    assert 'data-tab="inspector"' in client.get("/").text
+    assert 'id="inspector"' in client.get("/").text
+    assert 'data-tab="source"' in client.get("/").text
     assert "renderInspector" in client.get("/app.js").text
 
     workflow = {
