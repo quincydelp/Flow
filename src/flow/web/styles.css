@@ -246,6 +246,20 @@ p {
   border-radius: 0;
   background: var(--white);
   box-shadow: 4px 4px 0 var(--black);
+  cursor: pointer;
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+
+.node:hover,
+.node:focus-visible {
+  outline: 0;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--black);
+}
+
+.node.selected {
+  outline: 3px double var(--black);
+  outline-offset: 4px;
 }
 
 .node-type {
@@ -286,6 +300,15 @@ p {
   color: var(--white);
   background: var(--black);
   box-shadow: 4px 4px 0 var(--gray-300);
+}
+
+.node[data-type="agent"]:hover,
+.node[data-type="agent"]:focus-visible {
+  box-shadow: 6px 6px 0 var(--gray-300);
+}
+
+.node[data-type="agent"].selected {
+  outline-color: var(--gray-600);
 }
 
 .node[data-type="agent"] .node-type,
@@ -362,6 +385,72 @@ pre {
 }
 
 textarea:focus { box-shadow: inset 3px 0 0 var(--white); }
+
+.inspector {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 16px;
+  color: var(--white);
+  background: var(--black);
+}
+
+.inspector-eyebrow {
+  margin-bottom: 9px;
+  color: var(--gray-300);
+  font: 700 8px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.inspector h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+
+.inspector p {
+  margin-top: 7px;
+  color: var(--gray-300);
+  font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.inspector-empty {
+  margin-top: 22px;
+  padding: 12px;
+  border: 1px dashed #555;
+  color: var(--gray-300);
+  font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.inspector-definition {
+  margin: 18px 0 0;
+  border-top: 1px solid #3d3d3d;
+}
+
+.inspector-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.inspector-row dt {
+  color: var(--gray-300);
+  font: 700 8px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.inspector-row dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--white);
+  font: 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+}
 
 @media (max-width: 1050px) {
   main { grid-template-columns: 176px 1fr; }

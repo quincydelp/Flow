@@ -32,10 +32,14 @@
       </section>
       <section class="detail-panel">
         <div class="tabs">
-          <button class="tab active" data-tab="definition">Definition</button>
+          <button class="tab active" data-tab="inspector">Node</button>
+          <button class="tab" data-tab="source">Source</button>
           <button class="tab" data-tab="result">Last run</button>
         </div>
-        <textarea id="definition" spellcheck="false"></textarea>
+        <div id="inspector" class="inspector">
+          <div class="inspector-empty">Select a node in the DAG to inspect its definition.</div>
+        </div>
+        <textarea id="definition" spellcheck="false" hidden></textarea>
         <pre id="result" hidden>No run yet.</pre>
       </section>
     </main>
