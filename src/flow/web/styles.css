@@ -67,6 +67,7 @@ button {
 }
 
 button:hover { filter: invert(1); }
+button:disabled { cursor: wait; opacity: .55; }
 
 button:focus-visible {
   outline: 2px solid var(--white);
@@ -240,6 +241,7 @@ p {
 }
 
 .node {
+  position: relative;
   width: 156px;
   min-height: 82px;
   padding: 11px 12px 12px;
@@ -249,6 +251,40 @@ p {
   box-shadow: 4px 4px 0 var(--black);
   cursor: pointer;
   transition: transform 80ms ease, box-shadow 80ms ease;
+}
+
+.node-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font: 700 7px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.node[data-status="pending"] { opacity: .5; }
+
+.node[data-status="running"] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    rgb(0 0 0 / 8%) 5px 7px
+  );
+  animation: working 700ms steps(2, end) infinite;
+}
+
+.node[data-status="completed"] {
+  color: var(--white);
+  background: var(--black);
+}
+
+.node[data-status="completed"] small,
+.node[data-status="completed"] .node-type { color: var(--gray-300); }
+.node[data-status="completed"] .node-type::before { color: var(--white); }
+.node[data-status="failed"] { color: var(--white); background: var(--danger); }
+
+@keyframes working {
+  50% { box-shadow: 7px 7px 0 var(--black); transform: translate(-2px, -2px); }
 }
 
 .node:hover,

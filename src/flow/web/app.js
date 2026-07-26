@@ -1,4 +1,4 @@
-const state = { current: null, workflow: null, selectedStep: null };
+const state = { current: null, workflow: null, selectedStep: null, run: null };
 const $ = (selector) => document.querySelector(selector);
 
 async function request(url, options) {
@@ -30,6 +30,7 @@ async function loadList() {
 async function loadWorkflow(name) {
   state.current = name;
   state.selectedStep = null;
+  state.run = null;
   state.workflow = await request(`/api/workflows/${name}`);
   $("#workflow-name").textContent = state.workflow.name;
   $("#workflow-description").textContent = state.workflow.description || "No description";
@@ -75,6 +76,14 @@ function renderGraph() {
       card.setAttribute("role", "button");
       card.setAttribute("aria-label", `Inspect ${step.id}`);
       card.classList.toggle("selected", step.id === state.selectedStep);
+      const progress = state.run?.steps?.find((item) => item.step_id === step.id);
+      if (progress) {
+        card.dataset.status = progress.status;
+        const badge = document.createElement("span");
+        badge.className = "node-status";
+        badge.textContent = progress.status;
+        card.appendChild(badge);
+      }
       card.onclick = () => selectStep(step);
       card.onkeydown = (event) => {
         if (event.key === "Enter" || event.key === " ") selectStep(step);
@@ -147,6 +156,15 @@ function renderInspector(step = null) {
   if (selected.prompt) addInspectorRow(definition, "Prompt", selected.prompt);
   if (selected.step) addInspectorRow(definition, "Mapped node", selected.step);
   if (selected.persist?.length) addInspectorRow(definition, "Persist", selected.persist);
+  const progress = state.run?.steps?.find((item) => item.step_id === selected.id);
+  if (progress) {
+    addInspectorRow(definition, "Run status", progress.status);
+    if (progress.duration_ms) addInspectorRow(definition, "Duration", `${Math.round(progress.duration_ms)} ms`);
+    if (progress.error) addInspectorRow(definition, "Error", progress.error);
+    if (progress.output !== undefined && progress.output !== null) {
+      addInspectorRow(definition, "Output", progress.output);
+    }
+  }
   inspector.append(eyebrow, heading, definition);
 }
 
@@ -182,16 +200,48 @@ $("#save").onclick = async () => {
 
 $("#run").onclick = async () => {
   if (!state.current) return setStatus("Select a workflow", "error");
-  setStatus("Running…");
+  const button = $("#run");
+  button.disabled = true;
+  state.run = {
+    status: "running",
+    steps: state.workflow.steps.map((step) => ({ step_id: step.id, status: "pending" })),
+  };
+  renderGraph();
+  renderInspector();
+  setStatus("Starting…");
   try {
-    const result = await request(`/api/workflows/${state.current}/execute`, {
+    let result = await request(`/api/workflows/${state.current}/runs`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inputs: {} }),
     });
+    state.run = result;
+    while (result.status === "running") {
+      renderRunProgress(result);
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      result = await request(`/api/runs/${result.run_id}`);
+      state.run = result;
+    }
+    renderRunProgress(result);
     $("#result").textContent = JSON.stringify(result, null, 2);
     document.querySelector('[data-tab="result"]').click();
     setStatus(result.status, result.status === "completed" ? "success" : "error");
-  } catch (error) { setStatus(error.message, "error"); }
+  } catch (error) {
+    setStatus(error.message, "error");
+  } finally {
+    button.disabled = false;
+  }
 };
+
+function renderRunProgress(run) {
+  const completed = run.steps.filter((step) => step.status === "completed").length;
+  const active = run.steps.find((step) => step.status === "running");
+  const elapsed = (run.duration_ms / 1000).toFixed(1);
+  const message = active
+    ? `${active.step_id} · ${completed}/${run.steps.length} · ${elapsed}s`
+    : `${run.status} · ${completed}/${run.steps.length} · ${elapsed}s`;
+  setStatus(message, run.status === "failed" ? "error" : "");
+  renderGraph();
+  renderInspector();
+}
 
 $("#new").onclick = () => {
   state.current = null;

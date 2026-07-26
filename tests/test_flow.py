@@ -127,6 +127,36 @@ def test_visualizer_and_workflow_api(tmp_path):
     assert client.post("/api/validate", json=workflow).json()["valid"] is True
 
 
+def test_observable_workflow_run(tmp_path):
+    registry = Registry()
+
+    async def pause(value):
+        return value
+
+    registry.register_function("pause", pause)
+    runner = Runner(registry_=registry)
+    client = TestClient(create_app(tmp_path, runner))
+    workflow = {
+        "name": "observable",
+        "steps": [
+            {"id": "first", "type": "function", "uses": "pause", "with": {"value": 1}},
+            {
+                "id": "second",
+                "type": "function",
+                "uses": "pause",
+                "with": {"value": "${steps.first.output}"},
+            },
+        ],
+    }
+    assert client.put("/api/workflows/observable", json=workflow).status_code == 200
+    started = client.post("/api/workflows/observable/runs", json={"inputs": {}})
+    assert started.status_code == 202
+    run_id = started.json()["run_id"]
+    result = client.get(f"/api/runs/{run_id}").json()
+    assert result["status"] in {"running", "completed"}
+    assert len(result["steps"]) == 2
+
+
 async def test_finance_demo_end_to_end(tmp_path, monkeypatch):
     monkeypatch.setenv("FLOW_DATA_DIR", str(tmp_path))
     monkeypatch.setenv("FLOW_SOCIAL_MODE", "seed")

@@ -5,6 +5,7 @@ import inspect
 import time
 import uuid
 from dataclasses import asdict, is_dataclass
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from pydantic import BaseModel
@@ -51,9 +52,16 @@ class Runner:
         self.registry = registry_
         self.store = store or FileArtifactStore()
 
-    async def run(self, workflow: Workflow, inputs: dict[str, Any] | None = None) -> RunResult:
+    async def run(
+        self,
+        workflow: Workflow,
+        inputs: dict[str, Any] | None = None,
+        *,
+        run_id: str | None = None,
+        on_event: Callable[[StepResult], Awaitable[None] | None] | None = None,
+    ) -> RunResult:
         started = time.perf_counter()
-        run_id = uuid.uuid4().hex[:12]
+        run_id = run_id or uuid.uuid4().hex[:12]
         workflow_inputs = {**workflow.inputs, **(inputs or {})}
         outputs: dict[str, Any] = {}
         results: list[StepResult] = []
@@ -68,6 +76,11 @@ class Runner:
             if not ready:
                 raise RuntimeError(f"unable to schedule steps: {sorted(pending)}")
 
+            for step in ready:
+                await self._emit(
+                    on_event,
+                    StepResult(step_id=step.id, status="running", duration_ms=0),
+                )
             batch = await asyncio.gather(
                 *(self._run_step(run_id, step, workflow_inputs, outputs) for step in ready),
                 return_exceptions=True,
@@ -75,20 +88,32 @@ class Runner:
             for step, result in zip(ready, batch, strict=True):
                 pending.pop(step.id)
                 if isinstance(result, BaseException):
-                    results.append(
-                        StepResult(
-                            step_id=step.id,
-                            status="failed",
-                            duration_ms=0,
-                            error=str(result),
-                        )
+                    failed = StepResult(
+                        step_id=step.id,
+                        status="failed",
+                        duration_ms=0,
+                        error=str(result),
                     )
+                    results.append(failed)
+                    await self._emit(on_event, failed)
                     return self._result(run_id, workflow, outputs, results, started, "failed")
                 outputs[step.id] = result.output
                 results.append(result)
+                await self._emit(on_event, result)
 
         final = resolve(workflow.outputs, workflow_inputs, outputs) if workflow.outputs else outputs
         return self._result(run_id, workflow, final, results, started, "completed")
+
+    @staticmethod
+    async def _emit(
+        callback: Callable[[StepResult], Awaitable[None] | None] | None,
+        event: StepResult,
+    ) -> None:
+        if callback is None:
+            return
+        result = callback(event)
+        if inspect.isawaitable(result):
+            await result
 
     @staticmethod
     def _dependencies(step: Step) -> set[str]:
