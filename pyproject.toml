@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "declarative-flow"
+version = "0.1.0"
+description = "A typed, declarative workflow framework for deterministic operations and AI agents."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [{ name = "Quincy Delp" }]
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic>=2.8",
+  "typer>=0.12",
+  "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+agents = ["pydantic-ai>=0.0.20"]
+yaml = ["pyyaml>=6.0"]
+dev = [
+  "build>=1.2",
+  "httpx>=0.27",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+flow = "flow.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flow"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

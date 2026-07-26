@@ -1,0 +1,45 @@
+{
+  "name": "morning-brief",
+  "description": "Search recent mail deterministically, then extract structured summaries.",
+  "version": "1",
+  "inputs": {
+    "hours": 18
+  },
+  "steps": [
+    {
+      "id": "recent-emails",
+      "type": "source",
+      "uses": "outlook",
+      "action": "search",
+      "with": {
+        "hours": "${inputs.hours}"
+      }
+    },
+    {
+      "id": "extract",
+      "type": "fanout",
+      "over": "${steps.recent-emails.output}",
+      "concurrency": 10,
+      "step": {
+        "id": "extract-one",
+        "type": "agent",
+        "uses": "email-extractor",
+        "prompt": "Extract the important fields from this email: ${inputs.item}"
+      }
+    },
+    {
+      "id": "publish",
+      "type": "function",
+      "uses": "brief.publish",
+      "with": {
+        "items": "${steps.extract.output}"
+      },
+      "persist": [
+        "filesystem"
+      ]
+    }
+  ],
+  "outputs": {
+    "document": "${steps.publish.output}"
+  }
+}

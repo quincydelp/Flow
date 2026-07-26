@@ -1,0 +1,88 @@
+:root {
+  color-scheme: dark;
+  --bg: #0a0c0f;
+  --panel: #11151a;
+  --line: #252b33;
+  --muted: #8a949f;
+  --text: #edf2f7;
+  --lime: #b8f34a;
+  --blue: #63a7ff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+header {
+  height: 64px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; border-bottom: 1px solid var(--line); background: #0d1014;
+}
+.brand { font-weight: 700; letter-spacing: -.02em; }
+.brand span {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 8px;
+  border-radius: 8px; background: var(--lime); color: #10140a;
+}
+button {
+  border: 0; border-radius: 8px; padding: 9px 14px; background: var(--lime);
+  color: #10140a; font-weight: 700; cursor: pointer;
+}
+button.quiet { color: var(--text); background: #1a2027; margin-right: 6px; }
+main { display: grid; grid-template-columns: 220px minmax(420px, 1fr) 420px; height: calc(100vh - 64px); }
+aside, .detail-panel { background: var(--panel); }
+aside { border-right: 1px solid var(--line); padding: 18px 12px; }
+.section-title {
+  display: flex; justify-content: space-between; align-items: center; padding: 0 8px 12px;
+  color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .12em;
+}
+.section-title button { padding: 2px 8px; font-size: 18px; background: transparent; color: var(--muted); }
+.workflow-item {
+  display: flex; width: 100%; justify-content: space-between; text-align: left;
+  padding: 10px; margin-bottom: 4px; background: transparent; color: var(--text); font-weight: 600;
+}
+.workflow-item small { color: var(--muted); font-weight: 500; }
+.workflow-item:hover, .workflow-item.active { background: #1a2027; }
+.canvas-panel { min-width: 0; display: flex; flex-direction: column; }
+.panel-head {
+  display: flex; justify-content: space-between; align-items: flex-start; padding: 28px 30px 18px;
+}
+h1 { margin: 0 0 5px; font-size: 24px; letter-spacing: -.03em; }
+p { margin: 0; color: var(--muted); font-size: 14px; }
+.status {
+  max-width: 240px; padding: 6px 10px; border-radius: 99px; color: var(--muted);
+  background: #171c22; font: 12px ui-monospace, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.status.success { color: var(--lime); }
+.status.error { color: #ff7d7d; }
+.graph {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 18px;
+  padding: 30px; overflow: auto; background-image: radial-gradient(#252b33 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.graph.empty { color: var(--muted); }
+.node-column { display: flex; flex-direction: column; gap: 14px; }
+.node {
+  width: 170px; padding: 15px; border: 1px solid #303844; border-radius: 11px;
+  background: #151a20; box-shadow: 0 10px 30px #0005;
+}
+.node[data-type="agent"] { border-color: #493e70; }
+.node[data-type="fanout"] { border-color: #315b50; }
+.node[data-type="source"] { border-color: #63552e; }
+.node-type { color: var(--blue); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 9px; }
+.node[data-type="agent"] .node-type { color: #b99cff; }
+.node[data-type="fanout"] .node-type { color: #6de2bc; }
+.node[data-type="source"] .node-type { color: #f1cb66; }
+.node strong, .node small { display: block; }
+.node small { color: var(--muted); margin-top: 5px; }
+.arrow { color: #536171; font-size: 22px; }
+.detail-panel { border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
+.tabs { height: 52px; border-bottom: 1px solid var(--line); padding: 8px 10px 0; }
+.tab { color: var(--muted); background: transparent; border-radius: 0; padding: 10px 12px; }
+.tab.active { color: var(--text); border-bottom: 2px solid var(--lime); }
+textarea, pre {
+  flex: 1; width: 100%; margin: 0; padding: 18px; border: 0; outline: 0; resize: none;
+  background: #0e1216; color: #c8d3df; font: 12px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow: auto; white-space: pre-wrap;
+}
+@media (max-width: 1000px) {
+  main { grid-template-columns: 180px 1fr; }
+  .detail-panel { position: absolute; right: 0; top: 64px; bottom: 0; width: 42%; min-width: 330px; }
+  .canvas-panel { margin-right: 42%; }
+}

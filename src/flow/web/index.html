@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flow Studio</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand"><span>F</span> Flow Studio</div>
+      <div class="actions">
+        <button id="validate" class="quiet">Validate</button>
+        <button id="save" class="quiet">Save</button>
+        <button id="run">Run workflow</button>
+      </div>
+    </header>
+    <main>
+      <aside>
+        <div class="section-title">WORKFLOWS <button id="new" title="New workflow">+</button></div>
+        <div id="workflow-list"></div>
+      </aside>
+      <section class="canvas-panel">
+        <div class="panel-head">
+          <div>
+            <h1 id="workflow-name">Select a workflow</h1>
+            <p id="workflow-description">Inspect its graph, definition, and execution.</p>
+          </div>
+          <div id="status" class="status">Ready</div>
+        </div>
+        <div id="graph" class="graph empty">No workflow selected</div>
+      </section>
+      <section class="detail-panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="definition">Definition</button>
+          <button class="tab" data-tab="result">Last run</button>
+        </div>
+        <textarea id="definition" spellcheck="false"></textarea>
+        <pre id="result" hidden>No run yet.</pre>
+      </section>
+    </main>
+    <template id="node-template">
+      <article class="node">
+        <div class="node-type"></div>
+        <strong></strong>
+        <small></small>
+      </article>
+    </template>
+    <script src="/app.js"></script>
+  </body>
+</html>
+
