@@ -1,0 +1,19 @@
+services:
+  flow:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      FLOW_MODEL: ${FLOW_MODEL:-openai:gpt-5-mini}
+      REDDIT_CLIENT_ID: ${REDDIT_CLIENT_ID:-}
+      REDDIT_CLIENT_SECRET: ${REDDIT_CLIENT_SECRET:-}
+      REDDIT_USER_AGENT: ${REDDIT_USER_AGENT:-desktop:flow-finance-demo:v0.1 (by /u/your_username)}
+      FLOW_DATA_DIR: /data
+    volumes:
+      - flow-data:/data
+      - ./workflows:/app/workflows
+
+volumes:
+  flow-data:
+

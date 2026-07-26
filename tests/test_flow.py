@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from flow.app import create_app
+from flow.loader import load_workflow
 from flow.models import Workflow
 from flow.registry import Registry
 from flow.runner import Runner
@@ -121,3 +122,16 @@ def test_visualizer_and_workflow_api(tmp_path):
     assert saved.status_code == 200
     assert client.get("/api/workflows").json()[0]["name"] == "hello"
     assert client.post("/api/validate", json=workflow).json()["valid"] is True
+
+
+async def test_finance_demo_end_to_end(tmp_path, monkeypatch):
+    monkeypatch.setenv("FLOW_DATA_DIR", str(tmp_path))
+    import finance_demo.registrations  # noqa: F401
+
+    etl = await Runner().run(load_workflow("workflows/reddit-finance-etl.json"))
+    assert etl.status == "completed"
+    assert etl.outputs["load"]["rows_written"] == 5
+
+    brief = await Runner().run(load_workflow("workflows/grounded-finance-brief.json"))
+    assert brief.status == "completed"
+    assert brief.outputs["brief"]["cited_post_ids"]

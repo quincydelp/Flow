@@ -1,0 +1,29 @@
+{
+  "name": "grounded-finance-brief",
+  "description": "Retrieve relevant rows deterministically, then synthesize an answer constrained to cited dataset evidence.",
+  "version": "1",
+  "inputs": {
+    "question": "What are the strongest current risks and positive signals in the technology and macro discussion?"
+  },
+  "steps": [
+    {
+      "id": "retrieve-evidence",
+      "type": "function",
+      "uses": "dataset.search-signals",
+      "with": {
+        "query": "${inputs.question}",
+        "limit": 8
+      }
+    },
+    {
+      "id": "write-grounded-brief",
+      "type": "agent",
+      "uses": "finance.grounded-brief",
+      "prompt": "Answer this question: ${inputs.question}\nUse only these retrieved dataset rows and cite their post IDs. <context>${steps.retrieve-evidence.output}</context>"
+    }
+  ],
+  "outputs": {
+    "evidence": "${steps.retrieve-evidence.output}",
+    "brief": "${steps.write-grounded-brief.output}"
+  }
+}

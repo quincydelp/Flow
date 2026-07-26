@@ -147,7 +147,8 @@ class Runner:
         prompt = resolve(step.prompt, inputs, outputs)
         kwargs = resolve(step.inputs, inputs, outputs)
         result = await agent.run(prompt, **kwargs)
-        return getattr(result, "output", getattr(result, "data", result))
+        output = getattr(result, "output", getattr(result, "data", result))
+        return output.model_dump(mode="json") if isinstance(output, BaseModel) else output
 
     async def _source(
         self, step: SourceStep, inputs: dict[str, Any], outputs: dict[str, Any]

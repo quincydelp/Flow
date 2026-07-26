@@ -55,3 +55,26 @@ pytest
 ```
 
 Licensed under Apache 2.0.
+
+## Finance intelligence demo
+
+The Docker demo shows the central idea in two workflows:
+
+1. Code collects a complete, bounded set of Reddit finance posts.
+2. A typed agent turns each unstructured post into a new sentiment/topic row.
+3. Code upserts those rows into a local SQLite dataset.
+4. A second workflow retrieves matching rows deterministically.
+5. Another agent writes a brief grounded only in those rows and cites post IDs.
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Open `http://localhost:8000`, run `reddit-finance-etl`, then run
+`grounded-finance-brief`. The default uses realistic seed posts and a visible
+deterministic agent fallback, so it works without credentials. Add
+`OPENAI_API_KEY` to use the configured Pydantic AI model. Add Reddit OAuth
+client credentials to collect live subreddit posts.
+
+All generated data remains in the local `flow-data` Docker volume.
