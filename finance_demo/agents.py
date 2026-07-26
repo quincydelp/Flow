@@ -20,11 +20,17 @@ class StructuredAgent:
         self.output_type = output_type
         self.instructions = instructions
         self._agent = None
-        if os.getenv("OPENAI_API_KEY"):
+        model = os.getenv("FLOW_MODEL")
+        if os.getenv("ANTHROPIC_API_KEY") or os.getenv("OPENAI_API_KEY"):
             from pydantic_ai import Agent
 
             self._agent = Agent(
-                os.getenv("FLOW_MODEL", "openai:gpt-5-mini"),
+                model
+                or (
+                    "anthropic:claude-sonnet-4-20250514"
+                    if os.getenv("ANTHROPIC_API_KEY")
+                    else "openai:gpt-5-mini"
+                ),
                 output_type=output_type,
                 instructions=instructions,
             )
@@ -73,7 +79,8 @@ class EnrichmentAgent(StructuredAgent):
             sentiment_score=max(-1, min(1, score / 2)),
             confidence=0.62,
             rationale=(
-                "Deterministic demo classification; configure OPENAI_API_KEY for agent output."
+                "Deterministic demo classification; configure ANTHROPIC_API_KEY or "
+                "OPENAI_API_KEY for agent output."
             ),
             claims=[post.get("title", "")],
         )

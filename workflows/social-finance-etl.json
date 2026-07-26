@@ -1,13 +1,13 @@
 {
   "name": "social-finance-etl",
-  "description": "Search live Hacker News finance discussions without credentials, fan out typed agent extraction, and materialize a queryable dataset.",
+  "description": "Collect finance discussion and news, extract typed signals, and persist daily topic and ticker sentiment indices.",
   "version": "1",
   "inputs": {
     "limit": 20
   },
   "steps": [
     {
-      "id": "collect-posts",
+      "id": "collect-discussions",
       "type": "source",
       "uses": "hackernews.finance",
       "action": "search",
@@ -19,10 +19,35 @@
       }
     },
     {
+      "id": "collect-news",
+      "type": "source",
+      "uses": "gdelt.finance-news",
+      "action": "search",
+      "with": {
+        "query": {
+          "text": "(stocks OR earnings OR markets OR inflation) sourcelang:english",
+          "fallback_text": "stocks OR earnings OR markets OR inflation when:1d",
+          "timespan": "24h",
+          "limit": "${inputs.limit}"
+        }
+      }
+    },
+    {
+      "id": "merge-records",
+      "type": "function",
+      "uses": "dataset.merge-records",
+      "with": {
+        "collections": [
+          "${steps.collect-discussions.output}",
+          "${steps.collect-news.output}"
+        ]
+      }
+    },
+    {
       "id": "enrich-posts",
       "type": "fanout",
       "description": "One typed extraction per post; concurrency is explicit and bounded.",
-      "over": "${steps.collect-posts.output}",
+      "over": "${steps.merge-records.output}",
       "concurrency": 5,
       "step": {
         "id": "enrich-one",
@@ -36,8 +61,17 @@
       "type": "function",
       "uses": "dataset.upsert-signals",
       "with": {
-        "raw_posts": "${steps.collect-posts.output}",
+        "raw_posts": "${steps.merge-records.output}",
         "enrichments": "${steps.enrich-posts.output}"
+      }
+    },
+    {
+      "id": "build-indices",
+      "type": "function",
+      "uses": "dataset.build-sentiment-indices",
+      "with": {
+        "rows": "${steps.enrich-posts.output}",
+        "raw_records": "${steps.merge-records.output}"
       }
     },
     {
@@ -51,6 +85,7 @@
   ],
   "outputs": {
     "load": "${steps.materialize-dataset.output}",
-    "profile": "${steps.profile-dataset.output}"
+    "profile": "${steps.profile-dataset.output}",
+    "indices": "${steps.build-indices.output}"
   }
 }

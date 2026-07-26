@@ -135,6 +135,10 @@ async def test_finance_demo_end_to_end(tmp_path, monkeypatch):
     etl = await Runner().run(load_workflow("workflows/social-finance-etl.json"))
     assert etl.status == "completed"
     assert etl.outputs["load"]["rows_written"] > 0
+    assert etl.outputs["indices"]["indices_written"] > 0
+    assert all(
+        -1 <= row["sentiment_index"] <= 1 for row in etl.outputs["indices"]["indices"]
+    )
 
     brief = await Runner().run(load_workflow("workflows/grounded-finance-brief.json"))
     assert brief.status == "completed"

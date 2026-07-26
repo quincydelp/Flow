@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-agents = ["pydantic-ai-slim[openai]>=2.18"]
+agents = ["pydantic-ai-slim[anthropic,openai]>=2.18"]
 yaml = ["pyyaml>=6.0"]
 dev = [
   "build>=1.2",
